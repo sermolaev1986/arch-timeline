@@ -56,8 +56,8 @@
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>key</th>
-                <th>val</th>
+                <th>Заголовок</th>
+                <th>Дата</th>
             </tr>
             </thead>
             <tbody id="targetTableBody">
@@ -78,13 +78,10 @@
     $("#btnGetData").click(function () {
         $.getJSON('hello-world', function (data) {
             var items = [];
-            $.each(data, function (key, val) {
-                items.push('<tr><td>'+key+'</td><td>' + val + '</td></tr>');
+            $.each(data, function () {
+                items.push('<tr><td>'+this.eventTitle+'</td><td>' + this.eventDate + '</td></tr>');
             });
-            $('<ul/>', {
-                'class': 'my-new-list',
-                html: items.join('')
-            }).appendTo('#targetTableBody');
+            $('#targetTableBody').html(items.join(''))
         });
     });
 </script>
