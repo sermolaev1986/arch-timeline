@@ -13,11 +13,17 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Controller
 @RequestMapping("/events")
 public class ArchEventController {
+
+    private static final Logger log = Logger.getLogger(ArchEventController.class.getName());
+
     private static final String PAGE_COUNT = "PageCount";
     private static final String PAGE_SIZE = "PageSize";
     private static final String PAGE_NUM = "PageNum";
@@ -65,17 +71,15 @@ public class ArchEventController {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void create() {
-        EntityManager entityManager = EMF.get().createEntityManager();
+    public void create(@RequestBody ArchEvent archEvent) {
 
-        ArchEvent archEvent = new ArchEvent();
-        archEvent.setTitle("123");
-        archEvent.setDescription("dfgdfgdfgdfg");
+        EntityManager entityManager = EMF.get().createEntityManager();
 
         entityManager.persist(archEvent);
         entityManager.close();
 
     }
+
 
     @RequestMapping(value = "/next-page", method = RequestMethod.GET)
     @ResponseBody
@@ -105,6 +109,14 @@ public class ArchEventController {
 
         return results.toArray(new ArchEvent[results.size()]);
 
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public String handleServerErrors(Exception ex) {
+        log.log(Level.SEVERE, ex.getMessage(), ex);
+        return ex.getMessage();
     }
 
 

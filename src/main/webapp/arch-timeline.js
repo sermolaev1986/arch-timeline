@@ -4,10 +4,10 @@ function refreshDataTable() {
     var targetTableBody = $('#targetTableBody');
     dataTable.addClass("hide");
     wait.removeClass("hide");
-    $.getJSON('hello-world', function (data) {
+    $.getJSON('events/first-page/20', function (data) {
         var items = [];
         $.each(data, function () {
-            items.push('<tr><td>' + this.eventTitle + '</td><td>' + this.eventDate + '</td></tr>');
+            items.push('<tr><td>' + this.title + '</td><td>' + this.date + '</td></tr>');
         });
         targetTableBody.html(items.join(''));
         wait.addClass("hide");
@@ -19,6 +19,9 @@ $("#btnGetData").click(function () {
 });
 
 $("#addBtn").click(function () {
-    $.ajax('hello-world');
+    $.ajax({
+        url:'events/create',
+        type:'post'
+    });
     refreshDataTable();
 });
