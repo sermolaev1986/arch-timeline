@@ -23,7 +23,6 @@
     </div>
 
     <div class="arch-area">
-
         <button type="button" class="btn btn-lg btn-primary" id="btnGetData">Получить данные</button>
         <button id="addBtn" type="button" class="btn btn-lg btn-info">Добавить запись</button>
 
@@ -38,62 +37,15 @@
             </tbody>
         </table>
         <div class="alert alert-info hide arch-margin-top" id="wait">Подождите, идет загрузка...</div>
+        <div id="timeline-container" class="arch-margin-top"></div>
     </div>
 
 </div>
 
-
-<div id="container" style="border: black 1px dashed; margin: 20px"></div>
-
 <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v4.6.0.min.js"></script>
-<script defer="defer">
-    var container = document.getElementById("container");
-    var cWidth = container.clientWidth;
-    var cHeight = 100;
-    var stage = new Kinetic.Stage({
-        container: 'container',
-        width: cWidth,
-        height: cHeight + 10,
-        draggable: true,
-        dragBoundFunc: function(pos) {
-            var rightBound = -5020 + cWidth;
-            return {
-                x: pos.x > 0 ? 0 : pos.x < rightBound ? rightBound : pos.x,
-                y: this.getAbsolutePosition().y
-            }
-        }
-    });
-
-    var layer = new Kinetic.Layer();
-    var gauge = new Kinetic.Shape({
-        drawFunc: function(canvas) {
-            var context = canvas.getContext();
-            context.beginPath();
-            for (i = 0; i < 1000; i++) {
-                var step = 10   ;
-                var x = 10 + i * step;
-                context.moveTo(x, cHeight);
-                if (i % 10 == 0) {
-                    context.lineTo(x, cHeight - step * 2);
-                    context.fillText(i, x - step / 2, cHeight + 10);
-                } else {
-                    context.lineTo(x, cHeight - step / 2);
-                }
-                context.font = '10px Calibri';
-
-            }
-            context.closePath();
-            canvas.fillStroke(this);
-        },
-        stroke: 'black',
-        strokeWidth: 1
-    });
-    layer.add(gauge);
-    stage.add(layer);
-</script>
-
 <script src="bootstrap/assets/js/jquery.js"></script>
 <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="timeline.js"></script>
 <script src="arch-timeline.js"></script>
 </body>
 </html>

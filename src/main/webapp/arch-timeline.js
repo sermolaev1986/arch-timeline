@@ -1,3 +1,4 @@
+var timeLine = new TimeLine(800, 100);
 function refreshDataTable() {
     var wait = $("#wait");
     var dataTable = $("#dataTable");
