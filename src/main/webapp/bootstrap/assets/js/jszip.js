@@ -125,10 +125,10 @@ JSZip.prototype = (function () {
       }
       if (asUTF8 && this.options.binary) {
          // JSZip.prototype.utf8decode supports arrays as input
-         // skip to array => string step, utf8decode will do it.
+         // skip to array => string stepWidth, utf8decode will do it.
          result = JSZip.prototype.utf8decode(result);
       } else {
-         // no utf8 transformation, do the array => string step.
+         // no utf8 transformation, do the array => string stepWidth.
          result = JSZip.utils.transformTo("string", result);
       }
 

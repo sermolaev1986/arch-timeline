@@ -1,3 +1,4 @@
+var timeLine = new TimeLine(800, 200);
 function refreshDataTable() {
     var wait = $("#wait");
     var dataTable = $("#dataTable");
@@ -22,6 +23,7 @@ $("#addBtn").click(function () {
     $.ajax({
         url:'events/create',
         type:'post'
-    });
-    refreshDataTable();
+    }).done(function() {
+            refreshDataTable();
+        });
 });

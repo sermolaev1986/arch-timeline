@@ -69,19 +69,16 @@
             <tr>
                 <th>Заголовок</th>
                 <th>Дата</th>
-                <th>Эскиз</th>
             </tr>
             </thead>
             <tbody id="targetTableBody">
             </tbody>
         </table>
         <div class="alert alert-info hide arch-margin-top" id="wait">Подождите, идет загрузка...</div>
+        <div id="timeline-container" class="arch-margin-top"></div>
     </div>
 
 </div>
-
-
-<div id="container" style="border: black 1px dashed; margin: 20px"></div>
 
 <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v4.6.0.min.js"></script>
 <script defer="defer">
@@ -93,7 +90,7 @@
         width: cWidth,
         height: cHeight + 10,
         draggable: true,
-        dragBoundFunc: function (pos) {
+        dragBoundFunc: function(pos) {
             var rightBound = -5020 + cWidth;
             return {
                 x: pos.x > 0 ? 0 : pos.x < rightBound ? rightBound : pos.x,
@@ -104,11 +101,11 @@
 
     var layer = new Kinetic.Layer();
     var gauge = new Kinetic.Shape({
-        drawFunc: function (canvas) {
+        drawFunc: function(canvas) {
             var context = canvas.getContext();
             context.beginPath();
             for (i = 0; i < 1000; i++) {
-                var step = 10;
+                var step = 10   ;
                 var x = 10 + i * step;
                 context.moveTo(x, cHeight);
                 if (i % 10 == 0) {
@@ -132,6 +129,7 @@
 
 <script src="bootstrap/assets/js/jquery.js"></script>
 <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="timeline.js"></script>
 <script src="arch-timeline.js"></script>
 </body>
 </html>
