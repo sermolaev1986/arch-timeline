@@ -1,9 +1,17 @@
 package ru.arch_timeline.spring.controller;
 
 
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.util.Streams;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import ru.arch_timeline.jpa.EMF;
 import ru.arch_timeline.model.ArchEvent;
 
@@ -11,7 +19,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -71,11 +85,31 @@ public class ArchEventController {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void create(@RequestBody ArchEvent archEvent) {
+    public void create(MultipartHttpServletRequest request) throws IOException, ParseException {
 
         EntityManager entityManager = EMF.get().createEntityManager();
 
+        ArchEvent archEvent = new ArchEvent();
+
+        String title = request.getParameter("title");
+        archEvent.setTitle(title);
+
+        String date = request.getParameter("date");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        archEvent.setDate(simpleDateFormat.parse(date));
+
+        String description = request.getParameter("description");
+        archEvent.setDescription(description);
+
+        String tag = request.getParameter("tag");
+
+
+        MultipartFile file = request.getFile("file");
+        archEvent.setThumbnail(file.getBytes());
+
+
         entityManager.persist(archEvent);
+
         entityManager.close();
 
     }

@@ -1,7 +1,7 @@
 package ru.arch_timeline.model;
 
 
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import com.google.appengine.api.datastore.Blob;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import ru.arch_timeline.json.CustomDateSerializer;
 
@@ -54,4 +54,13 @@ public class ArchEvent {
 
     private String description;
 
+    private Blob thumbnail;
+
+    public byte[] getThumbnail() {
+        return thumbnail.getBytes();
+    }
+
+    public void setThumbnail(byte[] bytes) {
+        this.thumbnail = new Blob(bytes);
+    }
 }

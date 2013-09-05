@@ -19,7 +19,9 @@
 <div class="container">
 
     <div class="page-header">
-        <h1>Архилиния <small>временная шкала архитектуры</small></h1>
+        <h1>Архилиния
+            <small>временная шкала архитектуры</small>
+        </h1>
     </div>
 
     <div class="arch-area">
@@ -27,11 +29,47 @@
         <button type="button" class="btn btn-lg btn-primary" id="btnGetData">Получить данные</button>
         <button id="addBtn" type="button" class="btn btn-lg btn-info">Добавить запись</button>
 
+        <p>
+
+        <form action="events/create" method="POST" enctype="multipart/form-data">
+
+            <div>
+                <input type="text" name="title"/>
+                Название
+            </div>
+            <div>
+                <input type="text" name="description"/>
+                Краткое описание
+            </div>
+            <div>
+                <select size="1" name="tag">
+                    <option disabled >Выберите метку</option>
+                    <option value="t1">История русской архитектуры</option>
+                    <option value="t2">История ландшафтной архитектуры</option>
+                    <option value="t3">История зарубежной архитектуры</option>
+                    <option value="t4">История градостроительства</option>
+                </select>
+                Метка
+            </div>
+            <div>
+                <input type="date" name="date"/>
+                Дата
+            </div>
+            <div>
+                <input type="file" name="file"/>
+            </div>
+
+            <input type="submit">
+
+        </form>
+        </p>
+
         <table class="table table-striped hide arch-margin-top" id="dataTable">
             <thead>
             <tr>
                 <th>Заголовок</th>
                 <th>Дата</th>
+                <th>Эскиз</th>
             </tr>
             </thead>
             <tbody id="targetTableBody">
@@ -55,7 +93,7 @@
         width: cWidth,
         height: cHeight + 10,
         draggable: true,
-        dragBoundFunc: function(pos) {
+        dragBoundFunc: function (pos) {
             var rightBound = -5020 + cWidth;
             return {
                 x: pos.x > 0 ? 0 : pos.x < rightBound ? rightBound : pos.x,
@@ -66,11 +104,11 @@
 
     var layer = new Kinetic.Layer();
     var gauge = new Kinetic.Shape({
-        drawFunc: function(canvas) {
+        drawFunc: function (canvas) {
             var context = canvas.getContext();
             context.beginPath();
             for (i = 0; i < 1000; i++) {
-                var step = 10   ;
+                var step = 10;
                 var x = 10 + i * step;
                 context.moveTo(x, cHeight);
                 if (i % 10 == 0) {

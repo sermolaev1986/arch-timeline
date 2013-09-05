@@ -12,5 +12,8 @@
 
     <context:component-scan base-package="ru.arch_timeline.spring.controller" />
 
+    <bean id="multipartResolver" class="ru.arch_timeline.spring.multipart.StreamingMultipartResolver"/>
+    <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>-->
+
 
 </beans>
