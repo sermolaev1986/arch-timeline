@@ -13,6 +13,8 @@ function refreshDataTable() {
         targetTableBody.html(items.join(''));
         wait.addClass("hide");
         dataTable.removeClass("hide");
+
+        timeLine.refresh(data);
     });
 }
 $("#btnGetData").click(function () {

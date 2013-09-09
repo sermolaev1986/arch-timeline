@@ -3,6 +3,7 @@ function TimeLine(cWidth, cHeight) {
     this.end = new Date(2011, 10, 10, 12, 10);
     this.stepWidth = 10;
     this.step = 20;
+    this.height = cHeight;
     this.pointCount = (this.end.getTime() - this.begin.getTime())/(1000*60*60*24)/this.step;
     var timeLine = this;
     var container = $("#timeline-container");
@@ -104,4 +105,51 @@ function TimeLine(cWidth, cHeight) {
     group.add(gauge);
     layer.add(group);
     stage.add(layer);
+
+    this.refresh = function(data)   {
+        $.each(data, function () {
+            new Event(this,group);
+        });
+    }
+
+
+}
+
+function Event(data, group) {
+
+    var date = new Date(data.date);
+    var dayCount = (date.getTime() - timeLine.begin.getTime())/(1000*60*60*24);
+    var x = dayCount/timeLine.step * timeLine.stepWidth;
+
+    var thumbnailImageObj = new Image();
+    thumbnailImageObj.onload = function() {
+        var thumbnail = new Kinetic.Image({
+            x: x,
+            y: 50,
+            image: thumbnailImageObj,
+            width: 50,
+            height: 50
+        });
+        group.add(thumbnail);
+    }
+
+    thumbnailImageObj.src = 'data:image/png;base64,' + data.thumbnail;
+
+    var event = new Kinetic.Shape({
+        drawFunc: function (canvas) {
+            var context = canvas.getContext();
+
+            context.moveTo(x,timeLine.height);
+            context.lineTo(x,50);
+            context.stroke();
+
+            context.font = '10px Calibri';
+            context.fillText(data.title, x, 110);
+        },
+        stroke: 'black',
+        strokeWidth: 0
+    });
+
+    group.add(event);
+
 }
