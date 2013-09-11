@@ -4,7 +4,18 @@ function TimeLine(cWidth, cHeight) {
     this.stepWidth = 10;
     this.step = 20;
     this.height = cHeight;
-    this.pointCount = (this.end.getTime() - this.begin.getTime())/(1000*60*60*24)/this.step;
+    this.width = cWidth;
+//    this.pointCount = (this.end.getTime() - this.begin.getTime())/(1000*60*60*24)/this.step;
+    this.pointCount = 20;
+    this.pointWidth = this.width / this.pointCount;
+    this.minDateString = undefined;
+    this.maxDateString = undefined;
+    this.minDate = undefined;
+    this.maxDate = undefined;
+
+    var canvas = document.getElementById('myCanvas');
+    this.context = canvas.getContext('2d');
+
     var timeLine = this;
     var container = $("#timeline-container");
     //noinspection JSUnresolvedVariable,JSUnresolvedFunction
@@ -12,26 +23,15 @@ function TimeLine(cWidth, cHeight) {
         container: 'timeline-container',
         width: cWidth,
         height: cHeight + 10
-//        draggable: true,
-//        dragBoundFunc: function (pos) {
-//            var realWidth = timeLine.stepWidth * timeLine.pointCount;
-//            var rightBound = -realWidth + cWidth - 100;
-//            //noinspection JSUnresolvedFunction
-//            return  {
-//                x: pos.x >= 100 ? 100 : pos.x < rightBound ? rightBound : pos.x,
-//                y: this.getAbsolutePosition().y
-//            }
-//        }
     });
     var layer = new Kinetic.Layer();
-    var gauge = new Kinetic.Shape({
+    /*var gauge = new Kinetic.Shape({
         drawFunc: function (canvas) {
             var context = canvas.getContext();
             context.font = '10px Calibri';
             context.beginPath();
             var i = 0;
             for (var d = new Date(timeLine.begin.getTime()); d <= timeLine.end; d.setDate(d.getDate() + timeLine.step)) {
-                console.log(d);
                 var x = 10 + i * timeLine.stepWidth;
                 context.moveTo(x, cHeight);
                 if (i % 10 == 0) {
@@ -48,69 +48,112 @@ function TimeLine(cWidth, cHeight) {
         },
         stroke: 'black',
         strokeWidth: 0
-    });
-    var group = new Kinetic.Group({
-        draggable: true,
-        dragBoundFunc: function (pos) {
-            var realWidth = timeLine.stepWidth * timeLine.pointCount;
-            var rightBound = -realWidth + cWidth - 100;
-            //noinspection JSUnresolvedFunction
-            return  {
-                x: pos.x >= 100 ? 100 : pos.x < rightBound ? rightBound : pos.x,
-                y: this.getAbsolutePosition().y
-            }
-        }
-    });
+    });*/
+
     var box = new Kinetic.Rect({
-        x: 10,
+        x: 0,
         y: 0,
-        width: timeLine.pointCount * timeLine.stepWidth,
+//        width: timeLine.pointCount * timeLine.stepWidth,
+        width: cWidth,
         height: cHeight,
         fill: 'Beige',
         stroke: 'black',
         strokeWidth: 0
     });
 
-    var plusImageObj = new Image();
-    plusImageObj.onload = function() {
-        var plus = new Kinetic.Image({
-            x: 10,
-            y: 10,
-            image: plusImageObj,
-            width: 32,
-            height: 32
-        });
-        plus.on('mouseup', function() {
-            timeLine.step++;
-        });
-        layer.add(plus);
-    }
-    plusImageObj.src = 'images/plus-icon.png';
-    var minusImageObj = new Image();
-    minusImageObj.onload = function() {
-        var minus = new Kinetic.Image({
-            x: 10,
-            y: 50,
-            image: minusImageObj,
-            width: 32,
-            height: 32
-        });
-        minus.on('mouseup', function() {
-            timeLine.step--;
-        });
-        layer.add(minus);
-    }
-    minusImageObj.src = 'images/minus-icon.png';
-    group.add(box);
-    group.add(gauge);
-    layer.add(group);
-    stage.add(layer);
+//    group.add(box);
+//    group.add(gauge);
+//    layer.add(group);
+
+    $("#left-icon").on("mouseup",function() {
+        timeLine.previousPage();
+    });
+
+    $("#right-icon").on("mouseup",function() {
+        timeLine.nextPage();
+    });
+
+/*
+    layer.add(box);
+    stage.add(layer);*/
 
     this.refresh = function(data)   {
+        var context = timeLine.context;
+
+        context.clearRect(0,0,timeLine.width,timeLine.height);
+
+        var ms = timeLine.maxDate.getTime() - timeLine.minDate.getTime();
+
+        var pointWeight = ms / timeLine.pointCount;
+
         $.each(data, function () {
-            new Event(this,group);
+            var offset = new Date(this.date).getTime() - timeLine.minDate.getTime();
+            var x = offset * timeLine.pointWidth / pointWeight;
+
+
+            context.beginPath();
+            context.moveTo(x,0);
+            context.lineTo(x,100);
+            context.stroke();
+
+            var imageObj = new Image();
+
+            imageObj.onload = function() {
+                context.drawImage(imageObj, x, 0);
+            };
+            imageObj.src = 'data:image/png;base64,' + this.thumbnail;
+
+
+            context.fillText(this.title, x, 100);
+
+//            new Event(this,group);
         });
     }
+
+    this.nextPage = function()   {
+        var url = 'events/next-page/8?dateString=' + timeLine.maxDateString;
+            $.getJSON(url, function (data) {
+                if (data.length > 0)    {
+                    timeLine.setStartDate(data[0].date);
+                    timeLine.setEndDate(data[data.length - 1].date);
+                }
+
+                timeLine.refresh(data);
+            });
+    }
+
+    this.previousPage = function()   {
+        var url;
+        if (timeLine.minDateString == undefined)  {
+            url = 'events/previous-page/8?dateString=' + "2013-10-20";
+        } else  {
+            url = 'events/previous-page/8?dateString=' + timeLine.minDateString;
+        }
+
+            $.getJSON(url, function (data) {
+                if (data.length > 0)    {
+                    timeLine.setEndDate(data[0].date);
+                    timeLine.setStartDate(data[data.length - 1].date);
+                }
+
+                timeLine.refresh(data);
+            });
+
+    }
+
+    this.setStartDate = function(startDate) {
+        timeLine.minDateString = startDate;
+        timeLine.minDate =  new Date(startDate);
+        $("#startDate").text("start: " + startDate);
+    }
+
+    this.setEndDate = function(endDate) {
+
+        timeLine.maxDateString = endDate;
+        timeLine.maxDate =  new Date(endDate);
+        $("#endDate").text("end: " + endDate);
+    }
+
 
 
 }

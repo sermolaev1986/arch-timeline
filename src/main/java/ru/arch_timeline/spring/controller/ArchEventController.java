@@ -16,6 +16,7 @@ import ru.arch_timeline.jpa.EMF;
 import ru.arch_timeline.model.ArchEvent;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -37,6 +38,8 @@ import java.util.logging.Logger;
 public class ArchEventController {
 
     private static final Logger log = Logger.getLogger(ArchEventController.class.getName());
+
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private static final String PAGE_COUNT = "PageCount";
     private static final String PAGE_SIZE = "PageSize";
@@ -83,6 +86,42 @@ public class ArchEventController {
         return results.toArray(new ArchEvent[results.size()]);
     }
 
+    @RequestMapping(value = "/previous-page/{pageSize}", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public ArchEvent[] previousPage(@PathVariable int pageSize, @RequestParam String dateString) throws ParseException {
+
+        EntityManager entityManager = EMF.get().createEntityManager();
+
+        TypedQuery<ArchEvent> typedQuery = entityManager.createQuery("SELECT i FROM ArchEvent AS i WHERE i.date < :date ORDER BY i.date DESC", ArchEvent.class);
+
+        List<ArchEvent> results = new ArrayList<ArchEvent>();
+
+        results.addAll(typedQuery.setFirstResult(0)
+                .setMaxResults(pageSize)
+                .setParameter("date", dateFormat.parse(dateString), TemporalType.DATE)
+                .getResultList());
+
+        return results.toArray(new ArchEvent[results.size()]);
+    }
+
+    @RequestMapping(value = "/next-page/{pageSize}", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public ArchEvent[] nextPage(@PathVariable int pageSize, @RequestParam String dateString) throws ParseException {
+
+        EntityManager entityManager = EMF.get().createEntityManager();
+
+        TypedQuery<ArchEvent> typedQuery = entityManager.createQuery("SELECT i FROM ArchEvent AS i WHERE i.date > :date ORDER BY i.date ASC", ArchEvent.class);
+
+        List<ArchEvent> results = new ArrayList<ArchEvent>();
+
+        results.addAll(typedQuery.setFirstResult(0)
+                .setMaxResults(pageSize)
+                .setParameter("date", dateFormat.parse(dateString), TemporalType.DATE)
+                .getResultList());
+
+        return results.toArray(new ArchEvent[results.size()]);
+    }
+
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void create(MultipartHttpServletRequest request) throws IOException, ParseException {
@@ -115,7 +154,7 @@ public class ArchEventController {
     }
 
 
-    @RequestMapping(value = "/next-page", method = RequestMethod.GET)
+    /*@RequestMapping(value = "/next-page", method = RequestMethod.GET)
     @ResponseBody
     public ArchEvent[] nextPage(HttpSession session) {
 
@@ -143,7 +182,7 @@ public class ArchEventController {
 
         return results.toArray(new ArchEvent[results.size()]);
 
-    }
+    }*/
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
