@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import ru.arch_timeline.jpa.EMF;
 import ru.arch_timeline.model.ArchEvent;
+import ru.arch_timeline.model.ResultPage;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TemporalType;
@@ -88,9 +89,13 @@ public class ArchEventController {
 
     @RequestMapping(value = "/previous-page/{pageSize}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public ArchEvent[] previousPage(@PathVariable int pageSize, @RequestParam String dateString) throws ParseException {
+    public ResultPage previousPage(@PathVariable int pageSize, @RequestParam String dateString) throws ParseException {
 
         EntityManager entityManager = EMF.get().createEntityManager();
+
+        TypedQuery<Long> countQuery = entityManager.createQuery("SELECT COUNT(i) FROM ArchEvent AS i WHERE i.date < :date ", Long.class);
+
+        Long count = countQuery.setParameter("date", dateFormat.parse(dateString), TemporalType.DATE).getSingleResult();
 
         TypedQuery<ArchEvent> typedQuery = entityManager.createQuery("SELECT i FROM ArchEvent AS i WHERE i.date < :date ORDER BY i.date DESC", ArchEvent.class);
 
@@ -101,14 +106,21 @@ public class ArchEventController {
                 .setParameter("date", dateFormat.parse(dateString), TemporalType.DATE)
                 .getResultList());
 
-        return results.toArray(new ArchEvent[results.size()]);
+        ArchEvent[] events = results.toArray(new ArchEvent[results.size()]);
+        boolean isLast = count <= pageSize;
+
+        return new ResultPage(isLast,events);
     }
 
     @RequestMapping(value = "/next-page/{pageSize}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public ArchEvent[] nextPage(@PathVariable int pageSize, @RequestParam String dateString) throws ParseException {
+    public ResultPage nextPage(@PathVariable int pageSize, @RequestParam String dateString) throws ParseException {
 
         EntityManager entityManager = EMF.get().createEntityManager();
+
+        TypedQuery<Long> countQuery = entityManager.createQuery("SELECT COUNT(i) FROM ArchEvent AS i WHERE i.date > :date ", Long.class);
+
+        Long count = countQuery.setParameter("date", dateFormat.parse(dateString), TemporalType.DATE).getSingleResult();
 
         TypedQuery<ArchEvent> typedQuery = entityManager.createQuery("SELECT i FROM ArchEvent AS i WHERE i.date > :date ORDER BY i.date ASC", ArchEvent.class);
 
@@ -119,7 +131,9 @@ public class ArchEventController {
                 .setParameter("date", dateFormat.parse(dateString), TemporalType.DATE)
                 .getResultList());
 
-        return results.toArray(new ArchEvent[results.size()]);
+        ArchEvent[] events = results.toArray(new ArchEvent[results.size()]);
+        boolean isLast = count <= pageSize;
+        return new ResultPage(isLast,events);
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)

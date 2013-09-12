@@ -26,29 +26,29 @@ function TimeLine(cWidth, cHeight) {
     });
     var layer = new Kinetic.Layer();
     /*var gauge = new Kinetic.Shape({
-        drawFunc: function (canvas) {
-            var context = canvas.getContext();
-            context.font = '10px Calibri';
-            context.beginPath();
-            var i = 0;
-            for (var d = new Date(timeLine.begin.getTime()); d <= timeLine.end; d.setDate(d.getDate() + timeLine.step)) {
-                var x = 10 + i * timeLine.stepWidth;
-                context.moveTo(x, cHeight);
-                if (i % 10 == 0) {
-                    context.lineTo(x, cHeight - timeLine.stepWidth * 2);
-                    context.fillText(d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear(), x - timeLine.stepWidth / 2, cHeight + 10);
-                } else {
-                    context.lineTo(x, cHeight - timeLine.stepWidth / 2);
-                }
-                i++;
-            }
-//            timeLine.pointCount = i;
-            context.closePath();
-            canvas.fillStroke(this);
-        },
-        stroke: 'black',
-        strokeWidth: 0
-    });*/
+     drawFunc: function (canvas) {
+     var context = canvas.getContext();
+     context.font = '10px Calibri';
+     context.beginPath();
+     var i = 0;
+     for (var d = new Date(timeLine.begin.getTime()); d <= timeLine.end; d.setDate(d.getDate() + timeLine.step)) {
+     var x = 10 + i * timeLine.stepWidth;
+     context.moveTo(x, cHeight);
+     if (i % 10 == 0) {
+     context.lineTo(x, cHeight - timeLine.stepWidth * 2);
+     context.fillText(d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear(), x - timeLine.stepWidth / 2, cHeight + 10);
+     } else {
+     context.lineTo(x, cHeight - timeLine.stepWidth / 2);
+     }
+     i++;
+     }
+     //            timeLine.pointCount = i;
+     context.closePath();
+     canvas.fillStroke(this);
+     },
+     stroke: 'black',
+     strokeWidth: 0
+     });*/
 
     var box = new Kinetic.Rect({
         x: 0,
@@ -65,22 +65,51 @@ function TimeLine(cWidth, cHeight) {
 //    group.add(gauge);
 //    layer.add(group);
 
-    $("#left-icon").on("mouseup",function() {
+    $("#left-icon").on("mouseup", function () {
+        timeLine.setNextPageEnabled(true);
         timeLine.previousPage();
     });
 
-    $("#right-icon").on("mouseup",function() {
+    $("#right-icon").on("mouseup", function () {
+        timeLine.setPreviousPageEnabled(true);
         timeLine.nextPage();
     });
 
-/*
-    layer.add(box);
-    stage.add(layer);*/
+    this.setPreviousPageEnabled = function (isEnabled) {
+        if (isEnabled) {
+            $("#left-icon").removeAttr("disabled");
+        } else {
+            $("#left-icon").attr("disabled", "true");
+        }
+    }
 
-    this.refresh = function(data)   {
+    this.setNextPageEnabled = function (isEnabled) {
+        if (isEnabled) {
+            $("#right-icon").removeAttr("disabled");
+        } else {
+            $("#right-icon").attr("disabled", "true");
+        }
+    }
+
+    /*
+     layer.add(box);
+     stage.add(layer);*/
+
+    this.init = function () {
+        timeLine.setNextPageEnabled(false);
+        var date = new Date();
+        var day = date.getDate() + "";
+        if (day.length == 1)    {
+            day = "0" + day;
+        }
+        timeLine.minDateString = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + day;
+        timeLine.previousPage();
+    }
+
+    this.refresh = function (data) {
         var context = timeLine.context;
 
-        context.clearRect(0,0,timeLine.width,timeLine.height);
+        context.clearRect(0, 0, timeLine.width, timeLine.height);
 
         var ms = timeLine.maxDate.getTime() - timeLine.minDate.getTime();
 
@@ -90,15 +119,14 @@ function TimeLine(cWidth, cHeight) {
             var offset = new Date(this.date).getTime() - timeLine.minDate.getTime();
             var x = offset * timeLine.pointWidth / pointWeight;
 
-
             context.beginPath();
-            context.moveTo(x,0);
-            context.lineTo(x,100);
+            context.moveTo(x, 0);
+            context.lineTo(x, 100);
             context.stroke();
 
             var imageObj = new Image();
 
-            imageObj.onload = function() {
+            imageObj.onload = function () {
                 context.drawImage(imageObj, x, 0);
             };
             imageObj.src = 'data:image/png;base64,' + this.thumbnail;
@@ -110,50 +138,55 @@ function TimeLine(cWidth, cHeight) {
         });
     }
 
-    this.nextPage = function()   {
+    this.nextPage = function () {
         var url = 'events/next-page/8?dateString=' + timeLine.maxDateString;
-            $.getJSON(url, function (data) {
-                if (data.length > 0)    {
-                    timeLine.setStartDate(data[0].date);
-                    timeLine.setEndDate(data[data.length - 1].date);
-                }
+        $.getJSON(url, function (data) {
+            timeLine.setNextPageEnabled(!data.last);
 
-                timeLine.refresh(data);
-            });
+            var events = data.events;
+            if (events.length > 0) {
+                timeLine.setStartDate(events[0].date);
+                timeLine.setEndDate(events[events.length - 1].date);
+            }
+
+            timeLine.refresh(events);
+        });
     }
 
-    this.previousPage = function()   {
+    this.previousPage = function () {
         var url;
-        if (timeLine.minDateString == undefined)  {
-            url = 'events/previous-page/8?dateString=' + "2013-10-20";
-        } else  {
-            url = 'events/previous-page/8?dateString=' + timeLine.minDateString;
-        }
 
-            $.getJSON(url, function (data) {
-                if (data.length > 0)    {
-                    timeLine.setEndDate(data[0].date);
-                    timeLine.setStartDate(data[data.length - 1].date);
-                }
+        url = 'events/previous-page/8?dateString=' + timeLine.minDateString;
 
-                timeLine.refresh(data);
-            });
+        $.getJSON(url, function (data) {
+
+            timeLine.setPreviousPageEnabled(!data.last);
+
+            var events = data.events;
+            if (events.length > 0) {
+                timeLine.setEndDate(events[0].date);
+                timeLine.setStartDate(events[events.length - 1].date);
+            }
+
+            timeLine.refresh(events);
+        });
 
     }
 
-    this.setStartDate = function(startDate) {
+    this.setStartDate = function (startDate) {
         timeLine.minDateString = startDate;
-        timeLine.minDate =  new Date(startDate);
+        timeLine.minDate = new Date(startDate);
         $("#startDate").text("start: " + startDate);
     }
 
-    this.setEndDate = function(endDate) {
+    this.setEndDate = function (endDate) {
 
         timeLine.maxDateString = endDate;
-        timeLine.maxDate =  new Date(endDate);
+        timeLine.maxDate = new Date(endDate);
         $("#endDate").text("end: " + endDate);
     }
 
+    this.init();
 
 
 }
@@ -161,11 +194,11 @@ function TimeLine(cWidth, cHeight) {
 function Event(data, group) {
 
     var date = new Date(data.date);
-    var dayCount = (date.getTime() - timeLine.begin.getTime())/(1000*60*60*24);
-    var x = dayCount/timeLine.step * timeLine.stepWidth;
+    var dayCount = (date.getTime() - timeLine.begin.getTime()) / (1000 * 60 * 60 * 24);
+    var x = dayCount / timeLine.step * timeLine.stepWidth;
 
     var thumbnailImageObj = new Image();
-    thumbnailImageObj.onload = function() {
+    thumbnailImageObj.onload = function () {
         var thumbnail = new Kinetic.Image({
             x: x,
             y: 50,
@@ -182,8 +215,8 @@ function Event(data, group) {
         drawFunc: function (canvas) {
             var context = canvas.getContext();
 
-            context.moveTo(x,timeLine.height);
-            context.lineTo(x,50);
+            context.moveTo(x, timeLine.height);
+            context.lineTo(x, 50);
             context.stroke();
 
             context.font = '10px Calibri';

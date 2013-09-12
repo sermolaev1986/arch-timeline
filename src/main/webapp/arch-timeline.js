@@ -14,7 +14,7 @@ function refreshDataTable() {
         wait.addClass("hide");
         dataTable.removeClass("hide");
 
-        timeLine.refresh(data);
+        timeLine.init();
     });
 }
 $("#btnGetData").click(function () {
