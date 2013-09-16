@@ -1,9 +1,8 @@
 function TimeLine(cWidth, cHeight) {
-    this.stepWidth = 10;
+
     this.step = 20;
-    this.height = cHeight;
-    this.width = cWidth;
-//    this.pointCount = (this.end.getTime() - this.begin.getTime())/(1000*60*60*24)/this.step;
+    this.height = cHeight - 10;
+    this.width = cWidth - 100;
     this.pointCount = 20;
     this.pointWidth = this.width / this.pointCount;
     this.minDateString = undefined;
@@ -19,17 +18,16 @@ function TimeLine(cWidth, cHeight) {
     //noinspection JSUnresolvedVariable,JSUnresolvedFunction
     var stage = new Kinetic.Stage({
         container: 'timeline-container',
-        width: cWidth,
-        height: cHeight + 10
+        width: timeLine.width,
+        height: timeLine.height + 10
     });
     var layer = new Kinetic.Layer();
 
     var box = new Kinetic.Rect({
         x: 0,
         y: 0,
-//        width: timeLine.pointCount * timeLine.stepWidth,
-        width: cWidth,
-        height: cHeight,
+        width: timeLine.width,
+        height: timeLine.height,
         fill: 'Beige',
         stroke: 'black',
         strokeWidth: 0
@@ -85,48 +83,58 @@ function TimeLine(cWidth, cHeight) {
 
         context.clearRect(0, 0, timeLine.width, timeLine.height);
 
-        var ms = timeLine.maxDate.getTime() - timeLine.minDate.getTime();
+        var ms = Math.abs(timeLine.maxDate.getTime() - timeLine.minDate.getTime());
 
         var pointWeight = ms / timeLine.pointCount;
+        var pointWidthPx = timeLine.pointWidth / pointWeight;
 
         $.each(data, function () {
-            var offset = new Date(this.date).getTime() - timeLine.minDate.getTime();
-            var x = offset * timeLine.pointWidth / pointWeight;
+            var date = new Date(this.date);
+            var offset = date.getTime() - timeLine.minDate.getTime();
+
+            var someX = offset * pointWidthPx;
 
             context.beginPath();
-            context.moveTo(x, cHeight);
-            context.lineTo(x, 100);
+            context.moveTo(someX, timeLine.height - 10);
+            context.lineTo(someX, 100);
             context.stroke();
 
-            context.fillText(this.title, x, 100);
+            context.fillText(this.title, someX, 100);
+            context.fillText(date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear(), someX, 110);
 
 
             var imageObj = new Image();
 
-            imageObj.addEventListener('load', function(x) {
-                context.drawImage(imageObj, x, 0);
+            imageObj.addEventListener('load', function() {
+                context.drawImage(imageObj, someX, 0);
             }, false);
 
-            /*imageObj.onload = function (x) {
-                context.drawImage(imageObj, x, 0);
+            /*imageObj.onload = function (someX) {
+                context.drawImage(imageObj, someX, 0);
 
             };*/
             imageObj.src = 'data:image/png;base64,' + this.thumbnail;
 
+
             context.beginPath();
             var i = 0;
-            for (var d = timeLine.minDate; d <= timeLine.maxDate; d.setDate(d.getDate() + timeLine.step)) {
-                var x = 10 + i * timeLine.stepWidth;
-                context.moveTo(x, cHeight);
+            for (var d = new Date(timeLine.minDate); d <= timeLine.maxDate; d.setTime(d.getTime() + pointWeight)) {
+                var x = i * timeLine.pointWidth;
+                context.moveTo(x, timeLine.height - 10);
                 if (i % 10 == 0) {
-                    context.lineTo(x, cHeight - timeLine.stepWidth * 2);
-                    context.fillText(d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear(), x - timeLine.stepWidth / 2, cHeight + 10);
+                    context.lineTo(x, timeLine.height - 30);
+                    x = x - timeLine.pointWidth/ 2;
+                    if (x < 0)  {
+                        x = 0;
+                    }
+                    context.fillText(d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear(), x, timeLine.height);
                 } else {
-                    context.lineTo(x, cHeight - timeLine.stepWidth / 2);
+                    context.lineTo(x, timeLine.height - 20);
                 }
                 i++;
             }
             context.stroke();
+
 
 
 
