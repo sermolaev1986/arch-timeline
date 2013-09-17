@@ -16,9 +16,7 @@
     <script src="bootstrap/assets/js/respond.min.js"></script>
     <![endif]-->
 
-    <script src="bootstrap/assets/js/jquery.js"></script>
-    <script src="bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="admin.js"></script>
+
 </head>
 
 
@@ -80,44 +78,7 @@
 
 <div class="container">
 
-    <form action="events/create" method="POST" enctype="multipart/form-data">
-
-        <div class="form-group">
-            <label>Название</label>
-            <input type="text" name="title" class="form-control"/>
-        </div>
-
-        <div class="form-group">
-            <label>Краткое описание</label>
-            <textarea name="description" rows="3" class="form-control"></textarea>
-        </div>
-
-        <div class="form-group">
-            <label>Метка</label>
-            <select size="1" name="tag" class="form-control">
-                <option disabled>Выберите метку</option>
-                <option value="t1">История русской архитектуры</option>
-                <option value="t2">История ландшафтной архитектуры</option>
-                <option value="t3">История зарубежной архитектуры</option>
-                <option value="t4">История градостроительства</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Дата</label>
-            <input type="date" name="date" class="form-control"/>
-        </div>
-
-        <div class="form-group">
-            <input type="file" name="file" class="form-control"/>
-        </div>
-
-        <button type="submit" class="btn btn-default">Создать</button>
-
-
-    </form>
-
-    <table class="table table-striped hide arch-margin-top" id="dataTable">
+    <table class="table table-striped arch-margin-top" id="dataTable">
         <thead>
         <tr>
             <th>Заголовок</th>
@@ -130,6 +91,9 @@
     <div class="alert alert-info hide arch-margin-top" id="wait">Подождите, идет загрузка...</div>
 </div>
 
+<script src="bootstrap/assets/js/jquery.js"></script>
+<script src="bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="table.js"></script>
 
 </body>
 </html>
