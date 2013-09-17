@@ -1,8 +1,9 @@
 function TimeLine(cWidth, cHeight) {
 
-    this.step = 20;
-    this.height = cHeight - 10;
-    this.width = cWidth - 100;
+    this.widthBound = 100;
+    this.heightBound = 10;
+    this.height = cHeight - this.heightBound;
+    this.width = cWidth - this.widthBound;
     this.pointCount = 20;
     this.pointWidth = this.width / this.pointCount;
     this.minDateString = undefined;
@@ -81,7 +82,7 @@ function TimeLine(cWidth, cHeight) {
     this.refresh = function (data) {
         var context = timeLine.context;
 
-        context.clearRect(0, 0, timeLine.width, timeLine.height);
+        context.clearRect(0, 0, timeLine.width + timeLine.widthBound, timeLine.height + timeLine.heightBound);
 
         var ms = Math.abs(timeLine.maxDate.getTime() - timeLine.minDate.getTime());
 

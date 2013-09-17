@@ -14,67 +14,57 @@
     <!--[if lt IE 9]>
     <script src="bootstrap/assets/js/html5shiv.js"></script>
     <script src="bootstrap/assets/js/respond.min.js"></script>
+
+    <script>
+        var timeLine = new TimeLine(1200, 200);
+    </script>
     <![endif]-->
 </head>
-<div class="container">
 
-    <div class="page-header">
-        <h1>Архилиния
-            <small>временная шкала архитектуры</small>
-        </h1>
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">ArchTimeline</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="index.html">Home</a></li>
+                <li><a href="admin.html">admin</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li class="divider"></li>
+                        <li class="dropdown-header">Nav header</li>
+                        <li><a href="#">Separated link</a></li>
+                        <li><a href="#">One more separated link</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <form class="navbar-form navbar-right">
+                <div class="form-group">
+                    <input type="text" placeholder="Email" class="form-control">
+                </div>
+                <div class="form-group">
+                    <input type="password" placeholder="Password" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-success">Sign in</button>
+            </form>
+        </div><!--/.navbar-collapse -->
     </div>
+</div>
+<div class="container">
 
     <div class="arch-area">
 
-        <button type="button" class="btn btn-lg btn-primary" id="btnGetData">Получить данные</button>
-        <button id="addBtn" type="button" class="btn btn-lg btn-info">Добавить запись</button>
-
-        <p>
-
-        <form action="events/create" method="POST" enctype="multipart/form-data">
-
-            <div>
-                <input type="text" name="title"/>
-                Название
-            </div>
-            <div>
-                <input type="text" name="description"/>
-                Краткое описание
-            </div>
-            <div>
-                <select size="1" name="tag">
-                    <option disabled >Выберите метку</option>
-                    <option value="t1">История русской архитектуры</option>
-                    <option value="t2">История ландшафтной архитектуры</option>
-                    <option value="t3">История зарубежной архитектуры</option>
-                    <option value="t4">История градостроительства</option>
-                </select>
-                Метка
-            </div>
-            <div>
-                <input type="date" name="date"/>
-                Дата
-            </div>
-            <div>
-                <input type="file" name="file"/>
-            </div>
-
-            <input type="submit">
-
-        </form>
-        </p>
-
-        <table class="table table-striped hide arch-margin-top" id="dataTable">
-            <thead>
-            <tr>
-                <th>Заголовок</th>
-                <th>Дата</th>
-            </tr>
-            </thead>
-            <tbody id="targetTableBody">
-            </tbody>
-        </table>
-        <div class="alert alert-info hide arch-margin-top" id="wait">Подождите, идет загрузка...</div>
         <div id="timeline-container" class="arch-margin-top"></div>
         <div id="startDate"></div>
         <div id="endDate"></div>

@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -93,11 +94,11 @@ public class ArchEventController {
 
         EntityManager entityManager = EMF.get().createEntityManager();
 
-        TypedQuery<Long> countQuery = entityManager.createQuery("SELECT COUNT(i) FROM ArchEvent AS i WHERE i.date < :date ", Long.class);
+        TypedQuery<Long> countQuery = entityManager.createQuery("SELECT COUNT(i) FROM ArchEvent AS i WHERE i.date <= :date ", Long.class);
 
         Long count = countQuery.setParameter("date", dateFormat.parse(dateString), TemporalType.DATE).getSingleResult();
 
-        TypedQuery<ArchEvent> typedQuery = entityManager.createQuery("SELECT i FROM ArchEvent AS i WHERE i.date < :date ORDER BY i.date DESC", ArchEvent.class);
+        TypedQuery<ArchEvent> typedQuery = entityManager.createQuery("SELECT i FROM ArchEvent AS i WHERE i.date <= :date ORDER BY i.date DESC", ArchEvent.class);
 
         List<ArchEvent> results = new ArrayList<ArchEvent>();
 
@@ -118,11 +119,11 @@ public class ArchEventController {
 
         EntityManager entityManager = EMF.get().createEntityManager();
 
-        TypedQuery<Long> countQuery = entityManager.createQuery("SELECT COUNT(i) FROM ArchEvent AS i WHERE i.date > :date ", Long.class);
+        TypedQuery<Long> countQuery = entityManager.createQuery("SELECT COUNT(i) FROM ArchEvent AS i WHERE i.date >= :date ", Long.class);
 
         Long count = countQuery.setParameter("date", dateFormat.parse(dateString), TemporalType.DATE).getSingleResult();
 
-        TypedQuery<ArchEvent> typedQuery = entityManager.createQuery("SELECT i FROM ArchEvent AS i WHERE i.date > :date ORDER BY i.date ASC", ArchEvent.class);
+        TypedQuery<ArchEvent> typedQuery = entityManager.createQuery("SELECT i FROM ArchEvent AS i WHERE i.date >= :date ORDER BY i.date ASC", ArchEvent.class);
 
         List<ArchEvent> results = new ArrayList<ArchEvent>();
 
