@@ -12,12 +12,11 @@ function TimeLine(cWidth, cHeight) {
     this.maxDate = undefined;
 
     var timeLine = this;
-    var container = $("#timeline-container");
-    //noinspection JSUnresolvedVariable,JSUnresolvedFunction
+
     var stage = new Kinetic.Stage({
         container: 'timeline-container',
-        width: timeLine.width,
-        height: timeLine.height
+        width: cWidth,
+        height: cHeight
     });
     var layer = new Kinetic.Layer();
     var imageLayer = new Kinetic.Layer();
