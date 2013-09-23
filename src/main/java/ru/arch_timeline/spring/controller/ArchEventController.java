@@ -156,6 +156,7 @@ public class ArchEventController {
         archEvent.setDescription(description);
 
         String tag = request.getParameter("tag");
+        archEvent.setTag(new Integer(tag));
 
 
         MultipartFile file = request.getFile("file");

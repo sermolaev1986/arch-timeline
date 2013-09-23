@@ -90,13 +90,14 @@ function TimeLine(cWidth, cHeight) {
 
                     var someX = offset * pointWidthPx;
 
+                    var height = this.tag * 200;
                     context.beginPath();
                     context.moveTo(someX, timeLine.height - 10);
-                    context.lineTo(someX, 100);
+                    context.lineTo(someX, height);
                     context.stroke();
 
-                    context.fillText(this.title, someX, 100);
-                    context.fillText(date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear(), someX, 110);
+                    context.fillText(this.title, someX, height);
+                    context.fillText(date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear(), someX, height + 10);
 
 
                     var imageObj = new Image();
@@ -104,7 +105,7 @@ function TimeLine(cWidth, cHeight) {
                     imageObj.onload = function() {
                         var image = new Kinetic.Image({
                             x: someX,
-                            y: 0,
+                            y: height,
                             image: imageObj
                         });
 
