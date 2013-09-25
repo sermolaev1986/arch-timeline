@@ -75,6 +75,8 @@ function TimeLine(cWidth, cHeight) {
 
     this.refresh = function (data) {
 
+        imageLayer.removeChildren();
+
         var shape = new Kinetic.Shape({
             drawFunc: function(context) {
                 context.clearRect(0, 0, timeLine.width + timeLine.widthBound, timeLine.height + timeLine.heightBound);
