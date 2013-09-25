@@ -4,7 +4,7 @@ function TimeLine(cWidth, cHeight) {
     this.heightBound = 10;
     this.height = cHeight - this.heightBound;
     this.width = cWidth - this.widthBound;
-    this.pointCount = 20;
+    this.pointCount = 50;
     this.pointWidth = this.width / this.pointCount;
     this.minDateString = undefined;
     this.maxDateString = undefined;
@@ -115,6 +115,72 @@ function TimeLine(cWidth, cHeight) {
         strokeWidth: strokeWidth
     });
 
+    var gauge1 = new Kinetic.Shape({
+        drawFunc: function(context) {
+            context.beginPath();
+            for (var i = 0; i < timeLine.pointCount; i++) {
+                var x = i * timeLine.pointWidth;
+                context.moveTo(x, 1 * timeLine.tagHeight - 10);
+                if (i % 10 == 0) {
+                    context.lineTo(x, 1* timeLine.tagHeight - 30);
+                } else {
+                    context.lineTo(x, 1 * timeLine.tagHeight - 20);
+                }
+            }
+            context.stroke();
+        }
+    });
+
+    var gauge2 = new Kinetic.Shape({
+        drawFunc: function(context) {
+            context.beginPath();
+            for (var i = 0; i < timeLine.pointCount; i++) {
+                var x = i * timeLine.pointWidth;
+                context.moveTo(x, 2 * timeLine.tagHeight - 10);
+                if (i % 10 == 0) {
+                    context.lineTo(x, 2* timeLine.tagHeight - 30);
+                } else {
+                    context.lineTo(x, 2 * timeLine.tagHeight - 20);
+                }
+            }
+            context.stroke();
+        }
+    });
+
+    var gauge3 = new Kinetic.Shape({
+        drawFunc: function(context) {
+            context.beginPath();
+            for (var i = 0; i < timeLine.pointCount; i++) {
+                var x = i * timeLine.pointWidth;
+                context.moveTo(x, 3 * timeLine.tagHeight - 10);
+                if (i % 10 == 0) {
+                    context.lineTo(x, 3* timeLine.tagHeight - 30);
+                } else {
+                    context.lineTo(x, 3 * timeLine.tagHeight - 20);
+                }
+            }
+            context.stroke();
+        }
+    });
+
+    var gauge4 = new Kinetic.Shape({
+        drawFunc: function(context) {
+            context.beginPath();
+            for (var i = 0; i < timeLine.pointCount; i++) {
+                var x = i * timeLine.pointWidth;
+                context.moveTo(x, 4 * timeLine.tagHeight - 10);
+                if (i % 10 == 0) {
+                    context.lineTo(x, 4* timeLine.tagHeight - 30);
+                } else {
+                    context.lineTo(x, 4 * timeLine.tagHeight - 20);
+                }
+            }
+            context.stroke();
+        }
+    });
+
+
+
 
     staticLayer.add(firstBox);
     staticLayer.add(secondBox);
@@ -125,6 +191,11 @@ function TimeLine(cWidth, cHeight) {
     staticLayer.add(secondText);
     staticLayer.add(thirdText);
     staticLayer.add(fourthText);
+
+    staticLayer.add(gauge1);
+    staticLayer.add(gauge2);
+    staticLayer.add(gauge3);
+    staticLayer.add(gauge4);
 
     stage.add(staticLayer);
     stage.add(layer);
@@ -195,7 +266,7 @@ function TimeLine(cWidth, cHeight) {
 
                         var height = (tag * timeLine.tagHeight + timeLine.tagHeight / 2) - imageObj.height / 2;
                         context.beginPath();
-                        context.moveTo(someX, timeLine.height - 10);
+                        context.moveTo(someX, (tag + 1)* timeLine.tagHeight - 10);
                         context.lineTo(someX, height);
                         context.stroke();
 
@@ -218,9 +289,6 @@ function TimeLine(cWidth, cHeight) {
                             fontFamily: fontFamily,
                             fill: timeLine.labelFill
                         });
-
-                        /*context.fillText(this.title, someX, height);
-                        context.fillText(date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear(), someX, height + 10);*/
 
                         var image = new Kinetic.Image({
                             x: someX,
@@ -252,18 +320,14 @@ function TimeLine(cWidth, cHeight) {
 
                     context.beginPath();
                     var i = 0;
-                    for (var d = new Date(timeLine.minDate); d <= timeLine.maxDate; d.setTime(d.getTime() + pointWeight)) {
+                    for (var d = new Date(timeLine.minDate); d <= timeLine.maxDate; d.setTime(d.getTime() + pointWeight * 10)) {
                         var x = i * timeLine.pointWidth;
-                        context.moveTo(x, timeLine.height - 10);
                         if (i % 10 == 0) {
-                            context.lineTo(x, timeLine.height - 30);
                             x = x - timeLine.pointWidth/ 2;
                             if (x < 0)  {
                                 x = 0;
                             }
                             context.fillText(d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear(), x, timeLine.height);
-                        } else {
-                            context.lineTo(x, timeLine.height - 20);
                         }
                         i++;
                     }
