@@ -10,6 +10,12 @@ function TimeLine(cWidth, cHeight) {
     this.maxDateString = undefined;
     this.minDate = undefined;
     this.maxDate = undefined;
+    this.tagHeight = undefined;
+
+    this.labelFontSize = 10;
+    this.labelFill = "white";
+    this.tagFontSize = 30;
+    this.tagFill = "green";
 
     var timeLine = this;
 
@@ -20,18 +26,107 @@ function TimeLine(cWidth, cHeight) {
     });
     var layer = new Kinetic.Layer();
     var imageLayer = new Kinetic.Layer();
+    var staticLayer = new Kinetic.Layer();
 
-  /*  var box = new Kinetic.Rect({
+    var fontFamily = 'Calibri';
+
+
+    this.tagHeight = this.height / 4;
+
+    var firstText = new Kinetic.Text({
         x: 0,
-        y: 0,
-        width: timeLine.width,
-        height: timeLine.height,
-        fill: 'Beige',
-        stroke: 'black',
-        strokeWidth: 0
+        y: 0*this.tagHeight,
+        text: 'История русской архитектуры',
+        fontSize: timeLine.tagFontSize,
+        fontFamily: fontFamily,
+        fill: timeLine.tagFill
     });
 
-    layer.add(box);*/
+    var secondText = new Kinetic.Text({
+        x: 0,
+        y: 1*this.tagHeight,
+        text: 'Simple Text',
+        fontSize: timeLine.tagFontSize,
+        fontFamily: fontFamily,
+        fill: timeLine.tagFill
+    });
+
+    var thirdText = new Kinetic.Text({
+        x: 0,
+        y: 2*this.tagHeight,
+        text: 'Simple Text',
+        fontSize: timeLine.tagFontSize,
+        fontFamily: fontFamily,
+        fill: timeLine.tagFill
+    });
+
+    var fourthText = new Kinetic.Text({
+        x: 0,
+        y: 3 * this.tagHeight,
+        text: 'Simple Text',
+        fontSize: timeLine.tagFontSize,
+        fontFamily: fontFamily,
+        fill: timeLine.tagFill
+    });
+
+
+
+    var fill2 = 'Beige';
+    var stroke = 'black';
+    var strokeWidth = 0;
+
+    var firstBox = new Kinetic.Rect({
+        x: 0,
+        y: 0 * this.tagHeight,
+        width: cWidth,
+        height: this.tagHeight,
+        fill: fill2,
+        stroke: stroke,
+        strokeWidth: strokeWidth
+    });
+
+    var secondBox = new Kinetic.Rect({
+        x: 0,
+        y: 1 * this.tagHeight,
+        width: cWidth,
+        height: this.tagHeight,
+        fill: fill2,
+        stroke: stroke,
+        strokeWidth: strokeWidth
+    });
+
+    var thirdBox = new Kinetic.Rect({
+        x: 0,
+        y: 2 * this.tagHeight,
+        width: cWidth,
+        height: this.tagHeight,
+        fill: fill2,
+        stroke: stroke,
+        strokeWidth: strokeWidth
+    });
+
+    var fourthBox = new Kinetic.Rect({
+        x: 0,
+        y: 3 * this.tagHeight,
+        width: cWidth,
+        height: this.tagHeight,
+        fill: fill2,
+        stroke: stroke,
+        strokeWidth: strokeWidth
+    });
+
+
+    staticLayer.add(firstBox);
+    staticLayer.add(secondBox);
+    staticLayer.add(thirdBox);
+    staticLayer.add(fourthBox);
+
+    staticLayer.add(firstText);
+    staticLayer.add(secondText);
+    staticLayer.add(thirdText);
+    staticLayer.add(fourthText);
+
+    stage.add(staticLayer);
     stage.add(layer);
     stage.add(imageLayer);
 
@@ -92,32 +187,65 @@ function TimeLine(cWidth, cHeight) {
 
                     var someX = offset * pointWidthPx;
 
-                    var height = this.tag * 200;
-                    context.beginPath();
-                    context.moveTo(someX, timeLine.height - 10);
-                    context.lineTo(someX, height);
-                    context.stroke();
-
-                    context.fillText(this.title, someX, height);
-                    context.fillText(date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear(), someX, height + 10);
-
-
                     var imageObj = new Image();
 
+                    var tag = this.tag;
+                    var title = this.title;
                     imageObj.onload = function() {
+
+                        var height = (tag * timeLine.tagHeight + timeLine.tagHeight / 2) - imageObj.height / 2;
+                        context.beginPath();
+                        context.moveTo(someX, timeLine.height - 10);
+                        context.lineTo(someX, height);
+                        context.stroke();
+
+
+                        var titleText = new Kinetic.Text({
+                            x: someX,
+                            y: height,
+                            text: title,
+                            fontSize: timeLine.labelFontSize,
+                            fontFamily: fontFamily,
+                            fill: timeLine.labelFill
+                        });
+
+                        var date2 = date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear();
+                        var dateText = new Kinetic.Text({
+                            x: someX,
+                            y: height + 10,
+                            text: date2,
+                            fontSize: timeLine.labelFontSize,
+                            fontFamily: fontFamily,
+                            fill: timeLine.labelFill
+                        });
+
+                        /*context.fillText(this.title, someX, height);
+                        context.fillText(date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear(), someX, height + 10);*/
+
                         var image = new Kinetic.Image({
                             x: someX,
                             y: height,
                             image: imageObj
                         });
 
-                        image.on('mouseover', function() {
-                            image.moveToTop();
+
+                        var group = new Kinetic.Group({
+                            x: 0,
+                            y: 0
+                        });
+
+                        group.add(image);
+                        group.add(dateText);
+                        group.add(titleText);
+
+                        group.on('mouseover', function() {
+                            group.moveToTop();
                             imageLayer.draw();
                         });
 
-                        imageLayer.add(image);
+                        imageLayer.add(group);
                         imageLayer.draw();
+
                     };
 
                     imageObj.src = 'data:image/png;base64,' + this.thumbnail;
